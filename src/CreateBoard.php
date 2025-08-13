@@ -50,7 +50,7 @@
     $returnData['board']['hint'] = $boardInput->hint === true ? true : false;
 
     // Create an empty board
-    $boardCells = array_fill(0, $height, array_fill(0, $width, array(owner  => null, state => "s", neighbours => 0)));
+    $boardCells = array_fill(0,$height,array_fill(0,$width,['owner' => null, 'state' => 's', 'neighbours' => 0]));
     foreach ($boardCells as $rowKey => $row) {
         foreach ($row as $columnKey => $cell) {
             $boardCells[$rowKey][$columnKey]['y'] = $rowKey;
@@ -120,6 +120,7 @@
 
 
     // Create a secret for private boards. Digits, uppercase, and lower case
+    $boardSecret = '';
     for($secretCount = 0; $secretCount < 12; $secretCount++) {
         $randomInt = random_int(48, 109);
         if($randomInt > 57) { $randomInt = $randomInt + 7; }
@@ -132,6 +133,7 @@
 
     // If the player sent credentials, verify them
     $existingPlayer = false;
+    $playerSecret = '';
     if(isset($playerInput->playerKey) && isset($playerInput->secret)) {
         $playerKey = intval($playerInput->playerKey);
         $playerSecret = substr(preg_replace("/[^A-Za-z0-9]/", '', $playerInput->secret), 0, 20);
