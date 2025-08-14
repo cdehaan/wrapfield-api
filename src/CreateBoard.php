@@ -4,50 +4,48 @@
 
     // Start - Clean data from the player creating the board
     $userInput = json_decode(file_get_contents("php://input"));
-    $boardInput = $userInput->board;
-    $playerInput = $userInput->player;
 
     $height = 10;
-    if(isset($boardInput->height) && is_numeric($boardInput->height)) {
-        $height = intval($boardInput->height);
+    if(isset($userInput->height) && is_numeric($userInput->height)) {
+        $height = intval($userInput->height);
         $height = max(4, $height);
         $height = min(30, $height);
     }
 
     $width = 10;
-    if(isset($boardInput->width) && is_numeric($boardInput->width)) {
-        $width = intval($boardInput->width);
+    if(isset($userInput->width) && is_numeric($userInput->width)) {
+        $width = intval($userInput->width);
         $width = max(4, $width);
         $width = min(30, $width);
     }
 
     $mines = 15;
-    if(isset($boardInput->mines) && is_numeric($boardInput->mines)) {
-        $mines = intval($boardInput->mines);
+    if(isset($userInput->mines) && is_numeric($userInput->mines)) {
+        $mines = intval($userInput->mines);
         $mines = max(2, $mines);
         $mines = min($width*$height -1, $mines);
     }
 
     // 0 and 1 is better for MySQL
-    $private = $boardInput->private === true ? 1 : 0;
-    $wrapfield = $boardInput->wrapfield === true ? 1 : 0;
-    $hint = $boardInput->hint === true ? 1 : 0;
+    $private = $userInput->private === true ? 1 : 0;
+    $wrapfield = $userInput->wrapfield === true ? 1 : 0;
+    $hint = $userInput->hint === true ? 1 : 0;
 
     $playerName = "Anonymous";
-    if(isset($playerInput->name) && is_string($playerInput->name)) {
-        $playerName = substr(preg_replace('/[^\\p{L} 0-9]/mu', '-', $playerInput->name), 0, 20);
+    if(isset($userInput->name) && is_string($userInput->name)) {
+        $playerName = substr(preg_replace('/[^\\p{L} 0-9]/mu', '-', $userInput->name), 0, 20);
     }
 
-    if(!isset($playerInput->peerId)) { $returnData['error'] = 'No Peer Id found when creating board.'; die(json_encode($returnData)); }
-    $peerId = substr(preg_replace("/[^A-Za-z0-9 -]/", '', $playerInput->peerId), 0, 50); //5456de20-0bc4-479e-83dd-9805450fae03
+    if(!isset($userInput->peerId)) { $returnData['error'] = 'No Peer Id found when creating board.'; die(json_encode($returnData)); }
+    $peerId = substr(preg_replace("/[^A-Za-z0-9 -]/", '', $userInput->peerId), 0, 50); //5456de20-0bc4-479e-83dd-9805450fae03
     // End - Clean data from the player creating the board
 
 
 
     // True bools are better for returned data
     $returnData = [];
-    $returnData['board']['wrapfield'] = $boardInput->wrapfield === true ? true : false;
-    $returnData['board']['hint'] = $boardInput->hint === true ? true : false;
+    $returnData['board']['wrapfield'] = $userInput->wrapfield === true ? true : false;
+    $returnData['board']['hint'] = $userInput->hint === true ? true : false;
 
     // Create an empty board
     $boardCells = array_fill(0,$height,array_fill(0,$width,['owner' => null, 'state' => 's', 'neighbours' => 0]));
@@ -134,9 +132,9 @@
     // If the player sent credentials, verify them
     $existingPlayer = false;
     $playerSecret = '';
-    if(isset($playerInput->playerKey) && isset($playerInput->secret)) {
-        $playerKey = intval($playerInput->playerKey);
-        $playerSecret = substr(preg_replace("/[^A-Za-z0-9]/", '', $playerInput->secret), 0, 20);
+    if(isset($userInput->playerKey) && isset($userInput->secret)) {
+        $playerKey = intval($userInput->playerKey);
+        $playerSecret = substr(preg_replace("/[^A-Za-z0-9]/", '', $userInput->secret), 0, 20);
 
         $sql = "SELECT COUNT(*) FROM player WHERE player_key = $playerKey AND secret = '$playerSecret';";
         $result = $conn->query($sql);
