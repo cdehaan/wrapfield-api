@@ -25,9 +25,9 @@ $routes = [
         },
     ],
     'POST' => [
-        '/createBoard' => __DIR__ . '/../src/CreateBoard.php',
-        '/joinBoard'   => __DIR__ . '/../src/JoinBoard.php',
-        // add more here as you grow
+        '/createBoard'       => __DIR__ . '/../src/CreateBoard.php',
+        '/joinBoard'         => __DIR__ . '/../src/JoinBoard.php',
+        '/refreshConnection' => __DIR__ . '/../src/RefreshConnection.php',
     ],
 ];
 
